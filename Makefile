@@ -1,9 +1,12 @@
 # This Makefile is based on LuaSec's Makefile. Thanks to the LuaSec developers.
 # Inform the location to intall the modules
-LUAPATH  = /usr/share/lua/5.1
-LUACPATH = /usr/lib/lua/5.1
-INCDIR   = -I/usr/include/lua5.1
-LIBDIR   = -L/usr/lib
+
+PREFIX=/usr/local/openresty
+
+LUAPATH  = $(PREFIX)/luajit
+LUACPATH = $(PREFIX)/luajit/lib/lua/5.1
+INCDIR   = $(PREFIX)/luajit/include/luajit-2.0
+LIBDIR   = $(PREFIX)/lualib
 
 # For Mac OS X: set the system version
 MACOSX_VERSION = 10.4
@@ -11,18 +14,18 @@ MACOSX_VERSION = 10.4
 CMOD = zlib.so
 OBJS = lua_zlib.o
 
-LIBS = -lz -llua -lm
+LIBS = -lz -lm
 WARN = -Wall -pedantic
 
-BSD_CFLAGS  = -O2 -fPIC $(WARN) $(INCDIR) $(DEFS)
-BSD_LDFLAGS = -O -shared -fPIC $(LIBDIR)
+BSD_CFLAGS  = -O2 -fPIC $(WARN) -I$(INCDIR) $(DEFS)
+BSD_LDFLAGS = -O -shared -fPIC -L$(LIBDIR)
 
-LNX_CFLAGS  = -O2 -fPIC $(WARN) $(INCDIR) $(DEFS)
-LNX_LDFLAGS = -O -shared -fPIC $(LIBDIR)
+LNX_CFLAGS  = -O2 -fPIC $(WARN) -I$(INCDIR) $(DEFS)
+LNX_LDFLAGS = -O -shared -fPIC -L$(LIBDIR)
 
 MAC_ENV     = env MACOSX_DEPLOYMENT_TARGET='$(MACVER)'
-MAC_CFLAGS  = -O2 -fPIC -fno-common $(WARN) $(INCDIR) $(DEFS)
-MAC_LDFLAGS = -bundle -undefined dynamic_lookup -fPIC $(LIBDIR)
+MAC_CFLAGS  = -O2 -fPIC -fno-common $(WARN) -I$(INCDIR) $(DEFS)
+MAC_LDFLAGS = -bundle -undefined dynamic_lookup -fPIC -L$(LIBDIR)
 
 CC = gcc
 LD = $(MYENV) gcc
@@ -38,7 +41,7 @@ all:
 	@echo "  * macosx"
 
 install: $(CMOD)
-	cp $(CMOD) $(LUACPATH)
+	cp $(CMOD) $(LIBDIR)
 
 uninstall:
 	rm $(LUACPATH)/zlib.so
@@ -56,7 +59,7 @@ clean:
 	rm -f $(OBJS) $(CMOD)
 
 .c.o:
-	$(CC) -c $(CFLAGS) $(DEFS) $(INCDIR) -o $@ $<
+	$(CC) -c $(CFLAGS) $(DEFS) -I$(INCDIR) -o $@ $<
 
 $(CMOD): $(OBJS)
-	$(LD) $(LDFLAGS) $(LIBDIR) $(OBJS) $(LIBS) -o $@
+	$(LD) $(LDFLAGS) -L$(LIBDIR) $(OBJS) $(LIBS) -o $@
