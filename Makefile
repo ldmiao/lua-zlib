@@ -5,7 +5,7 @@ PREFIX=/usr/local/openresty
 
 LUAPATH  = $(PREFIX)/luajit
 LUACPATH = $(PREFIX)/luajit/lib/lua/5.1
-INCDIR   = $(PREFIX)/luajit/include/luajit-2.0
+INCDIR   = $(PREFIX)/luajit/include/luajit-2.1
 LIBDIR   = $(PREFIX)/lualib
 
 # For Mac OS X: set the system version
